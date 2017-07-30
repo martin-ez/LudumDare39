@@ -5,6 +5,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Char : MonoBehaviour
 {
+    int resources = 1000;
+    int cableCost = 10;
+
     private Rigidbody _rigidBody;
     private Vector3 _velocity;
 
@@ -25,5 +28,15 @@ public class Char : MonoBehaviour
         _velocity = (movement * _speed);
 
         _rigidBody.velocity = _velocity;
+    }
+
+    public bool HaveResources()
+    {
+        if (resources >= cableCost)
+        {
+            resources -= cableCost;
+            return true;
+        }
+        return false;
     }
 }

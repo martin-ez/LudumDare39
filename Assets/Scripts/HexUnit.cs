@@ -9,7 +9,13 @@ public class HexUnit : MonoBehaviour
     public GameObject[] prefabSource;
     public GameObject prefabCable;
 
+    public Material possibleMat;
+    public Material withCableMat;
+    public Material inUseMat;
+
     HexGrid grid;
+
+    GameObject statusBar;
 
     public enum Type
     {
@@ -19,11 +25,35 @@ public class HexUnit : MonoBehaviour
         Cable
     }
     public Type type { get; private set; }
+
+    public enum State
+    {
+        Free,
+        Possible,
+        Cable,
+        Trail,
+        InUse
+    }
+    public State state { get; private set; }
+    Vector2 source;
+
     public Vector2 coords;
+
+    void Awake()
+    {
+        grid = FindObjectOfType<HexGrid>();
+
+        state = State.Free;
+        statusBar = GameObject.CreatePrimitive(PrimitiveType.Quad);
+        statusBar.transform.SetParent(transform);
+        statusBar.transform.localEulerAngles = Vector3.right * 90;
+        statusBar.transform.localScale = Vector3.one * 50;
+        statusBar.transform.localPosition = Vector3.zero;
+        statusBar.SetActive(false);
+    }
 
     void Start()
     {
-        grid = FindObjectOfType<HexGrid>();
         MapTrigger[] trigger = GetComponentsInChildren<MapTrigger>();
         for (int i = 0; i < trigger.Length; i++)
         {
@@ -78,22 +108,55 @@ public class HexUnit : MonoBehaviour
             GameObject instance = Instantiate(objectsInUnit);
             instance.transform.SetParent(transform);
             instance.transform.localPosition = Vector3.zero;
-        }
 
-        if (type == Type.Source)
-        {
-            FindObjectOfType<HexGrid>().Pulse += SourcePulse;
+            if (type == Type.Source)
+            {
+                Source s = instance.GetComponent<Source>();
+                if (s != null) grid.AddSource(coords, s);
+            }
         }
     }
 
-    void SourcePulse()
+    public void ChangeStatus(State pStatus, Vector2 pSource)
     {
+        source = pSource;
+        ChangeStatus(pStatus);
+    }
 
+    public void ChangeStatus(State pStatus)
+    {
+        state = pStatus;
+        //Change color status
+        switch (state)
+        {
+            case State.Free:
+                statusBar.SetActive(false);
+                break;
+            case State.Possible:
+                statusBar.SetActive(true);
+                statusBar.GetComponent<MeshRenderer>().material = possibleMat;
+                break;
+            case State.Cable:
+                statusBar.SetActive(true);
+                statusBar.GetComponent<MeshRenderer>().material = withCableMat;
+                break;
+            case State.Trail:
+                statusBar.SetActive(true);
+                statusBar.GetComponent<MeshRenderer>().material = withCableMat;
+                break;
+            case State.InUse:
+                statusBar.SetActive(true);
+                statusBar.GetComponent<MeshRenderer>().material = inUseMat;
+                break;
+        }
     }
 
     void OnInteract()
     {
-
+        if (state == State.Possible)
+        {
+            grid.PlaceCable(coords, source);
+        }
     }
 
     void OnTriggerEnter(Collider other)
@@ -138,5 +201,9 @@ public class HexUnit : MonoBehaviour
         }
 
         grid.CreateUnit(coordsNew);
+        if (state == State.Trail)
+        {
+            grid.CheckPossibles(coords, source);
+        }
     }
 }

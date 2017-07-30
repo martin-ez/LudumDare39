@@ -117,8 +117,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 686925}
-  - component: {fileID: 686924}
   - component: {fileID: 686923}
+  - component: {fileID: 686924}
   m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
@@ -143,8 +143,7 @@ CapsuleCollider:
 --- !u!114 &686924
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 114028858503114890, guid: 1c99c359678cbbb41a99cb2adad50874,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 686922}
   m_Enabled: 1
@@ -152,13 +151,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e127ad03c3afb44901d5f9bf4a08d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabEmpty:
-  - {fileID: 1348585781988556, guid: f8b3d8a60d51b924a97768f8c1ae8e82, type: 2}
-  prefabWall:
-  - {fileID: 1443877919192134, guid: 4c8be40e65c7d1a4c8d3bf64a63de533, type: 2}
-  prefabSource:
-  - {fileID: 1546676554179594, guid: d065940733dcd0048b22c4486cc1dbce, type: 2}
+  prefabEmpty: []
+  prefabWall: []
+  prefabSource: []
   prefabCable: {fileID: 0}
+  possibleMat: {fileID: 0}
+  withCableMat: {fileID: 0}
+  inUseMat: {fileID: 0}
   coords: {x: 0, y: 0}
 --- !u!4 &686925
 Transform:
@@ -205,7 +204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hexUnitPrefab: {fileID: 1334020575634442, guid: 1c99c359678cbbb41a99cb2adad50874,
     type: 2}
-  chanceSource: 0.1
+  chanceSource: 0.2
   chanceWall: 0.2
 --- !u!4 &28288797
 Transform:
@@ -585,8 +584,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensivityX: 5
   sensivityY: 1
-  distance: 35
-  cameraHeight: 7
+  distance: 50
+  cameraHeight: 20
 --- !u!1 &1055252506
 GameObject:
   m_ObjectHideFlags: 0

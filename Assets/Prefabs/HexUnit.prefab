@@ -471,7 +471,12 @@ MonoBehaviour:
   - {fileID: 1443877919192134, guid: 4c8be40e65c7d1a4c8d3bf64a63de533, type: 2}
   prefabSource:
   - {fileID: 1546676554179594, guid: d065940733dcd0048b22c4486cc1dbce, type: 2}
-  prefabCable: {fileID: 0}
+  - {fileID: 1106713980020932, guid: 81f8326e30f44b441976b5712ab32752, type: 2}
+  prefabCable: {fileID: 1536535452240380, guid: eaea1c52c332e6e469201b0d4cdbda15,
+    type: 2}
+  possibleMat: {fileID: 2100000, guid: 855aed511d093d542b0ce098aa2fb3db, type: 2}
+  withCableMat: {fileID: 2100000, guid: 87e08d166f1d3834a80e386ca23b5a1e, type: 2}
+  inUseMat: {fileID: 2100000, guid: 2949ed30e5e116240afd84e23bce8ffe, type: 2}
   coords: {x: 0, y: 0}
 --- !u!114 &114111472046402708
 MonoBehaviour:

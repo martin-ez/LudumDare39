@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Base : MonoBehaviour {
+public class Base : MonoBehaviour
+{
+    public int MaxPower = 100;
+    int power = 0;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void GetPower(int amount)
+    {
+        power += amount;
+    }
 }
