@@ -139,4 +139,4 @@ MonoBehaviour:
   sourceDestroyedPrefab: {fileID: 1348585781988556, guid: f8b3d8a60d51b924a97768f8c1ae8e82,
     type: 2}
   startingPower: 100
-  uses: 10
+  uses: 100

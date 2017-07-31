@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HexGrid : MonoBehaviour
 {
-    Char character;
+    Character character;
 
     public GameObject hexUnitPrefab;
     public float chanceSource = 0.1f;
@@ -57,7 +57,7 @@ public class HexGrid : MonoBehaviour
 
     void Start()
     {
-        character = FindObjectOfType<Char>();
+        character = FindObjectOfType<Character>();
         nextPulse = Time.time;
     }
 
@@ -77,9 +77,7 @@ public class HexGrid : MonoBehaviour
         string key = coords.x + ":" + coords.y;
         if (grid.ContainsKey(key) && key != "0:0") return;
 
-        bool checkAfterwards = false;
-        Vector2 check = Vector2.zero;
-        bool noSource = CheckSourceRestrictions(coords, out checkAfterwards, out check);
+        bool noSource = CheckSourceRestrictions(coords);
 
         GameObject unit = Instantiate(hexUnitPrefab);
         unit.transform.SetParent(transform);
@@ -97,18 +95,12 @@ public class HexGrid : MonoBehaviour
             hexUnit.ChangeStatus(HexUnit.State.Trail, coords);
             StartPath(coords);
         }
-        if (checkAfterwards)
-        {
-            CheckPossibles(check, check);
-        }
 
+        CheckGridConnections();
     }
 
-    bool CheckSourceRestrictions(Vector2 coords, out bool checkAfterwards, out Vector2 source)
+    bool CheckSourceRestrictions(Vector2 coords)
     {
-        checkAfterwards = false;
-        source = Vector2.zero;
-
         //No around base
         for (int i = 0; i < 6; i++)
         {
@@ -125,13 +117,8 @@ public class HexGrid : MonoBehaviour
         {
             Vector2 current = coords + borders[i];
             HexUnit unit = GetUnit(current);
-            if (unit != null && (unit.state != HexUnit.State.Free))
+            if (unit != null && unit.state != HexUnit.State.Free)
             {
-                if (unit.state == HexUnit.State.Trail)
-                {
-                    checkAfterwards = true;
-                    source = current;
-                }
                 return true;
             }
         }
@@ -144,8 +131,6 @@ public class HexGrid : MonoBehaviour
         List<string> path = new List<string>();
         path.Add(key);
         incompletePaths.Add(key, path);
-
-        CheckPossibles(source, source);
     }
 
     public void PlaceCable(Vector2 cable, Vector2 source)
@@ -163,13 +148,40 @@ public class HexGrid : MonoBehaviour
         if (path != null)
         {
             string newPoint = cable.x + ":" + cable.y;
-            string previous = path[path.Count - 1];
             path.Add(newPoint);
-            incompletePaths.Remove(key);
 
-            if (CheckPossibles(cable, source))
+            string previous = path[path.Count - 2];
+            GetUnit(StringToVector(previous)).ChangeStatus(HexUnit.State.Cable);
+            incompletePaths.Remove(key);
+            Vector2 joinPath;
+            bool pathCompleted = CheckPathCompleted(cable, out joinPath);
+            if (pathCompleted)
             {
-                paths.Add(key, path);
+                unit.ChangeStatus(HexUnit.State.InUse);
+                if (joinPath != Vector2.zero)
+                {
+                    //It joins a different path
+                    string joinPoint = joinPath.x + ":" + joinPath.y;
+                    path.Add(joinPoint);
+                    Vector2 pathSource = GetUnit(joinPath).source;
+                    string pathKey = pathSource.x + ":" + pathSource.y;
+                    List<string> p;
+                    paths.TryGetValue(pathKey, out p);
+
+                    bool merge = false;
+
+                    for (int i = 0; i < p.Count - 1; i++)
+                    {
+                        if (!merge)
+                        {
+                            merge = p[i] == joinPoint;
+                        }
+                        else
+                        {
+                            path.Add(p[i]);
+                        }
+                    }
+                }
                 CompletePath(path);
             }
             else
@@ -177,32 +189,14 @@ public class HexGrid : MonoBehaviour
                 incompletePaths.Add(key, path);
             }
 
-            CleanUp(StringToVector(previous));
+            CheckGridConnections();
         }
     }
 
-    void CompletePath(List<string> path)
+    bool CheckPathCompleted(Vector2 coord, out Vector2 joinPath)
     {
-        for (int i = 0; i < path.Count; i++)
-        {
-            HexUnit unit = GetUnit(StringToVector(path[i]));
-            if (unit != null)
-            {
-                unit.ChangeStatus(HexUnit.State.InUse);
-            }
-        }
+        joinPath = Vector2.zero;
 
-        string key = path[0];
-        Source s;
-        sources.TryGetValue(key, out s);
-        if (s != null)
-        {
-            s.StartExtract();
-        }
-    }
-
-    public bool CheckPossibles(Vector2 coord, Vector2 source)
-    {
         Vector2[] borders = coord.x % 2 == 0 ? evenBorder : oddBorder;
 
         for (int i = 0; i < 6; i++)
@@ -215,34 +209,33 @@ public class HexGrid : MonoBehaviour
             {
                 if (unit.state == HexUnit.State.InUse)
                 {
+                    joinPath = current;
                     return true;
-                }
-
-                if (unit.type == HexUnit.Type.Empty && unit.state == HexUnit.State.Free)
-                {
-                    unit.ChangeStatus(HexUnit.State.Possible, source);
                 }
             }
         }
-
         return false;
     }
 
-    void CleanUp(Vector2 coord)
+    void CompletePath(List<string> path)
     {
-        HexUnit previous = GetUnit(coord);
-        previous.ChangeStatus(HexUnit.State.Cable);
-
-        Vector2[] borders = coord.x % 2 == 0 ? evenBorder : oddBorder;
-
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < path.Count - 1; i++)
         {
-            Vector2 current = coord + borders[i];
-            HexUnit unit = GetUnit(current);
-            if (unit != null && unit.state == HexUnit.State.Possible)
+            HexUnit unit = GetUnit(StringToVector(path[i]));
+            if (unit != null)
             {
-                unit.ChangeStatus(HexUnit.State.Free);
+                unit.ChangeStatus(HexUnit.State.InUse);
             }
+        }
+        path.Add("0:0");
+
+        string key = path[0];
+        paths.Add(key, path);
+        Source s;
+        sources.TryGetValue(key, out s);
+        if (s != null)
+        {
+            s.StartExtract();
         }
     }
 
@@ -292,5 +285,47 @@ public class HexGrid : MonoBehaviour
         if (chance > chanceWall + chanceSource) return HexUnit.Type.Empty;
 
         return (chance < chanceSource) ? HexUnit.Type.Source : HexUnit.Type.Wall;
+    }
+
+    void CheckGridConnections()
+    {
+        foreach (KeyValuePair<string, HexUnit> pair in grid)
+        {
+            HexUnit unit = pair.Value;
+            if (unit.type == HexUnit.Type.Empty)
+            {
+                unit.ChangeStatus(HexUnit.State.Free);
+                Vector2 coord = unit.coords;
+                Vector2[] borders = coord.x % 2 == 0 ? evenBorder : oddBorder;
+
+                Vector2 source = Vector2.zero;
+
+                bool possible = false;
+                bool end = false;
+                for (int i = 0; i < 6 && !end; i++)
+                {
+                    Vector2 current = coord + borders[i];
+                    HexUnit curUnit = GetUnit(current);
+                    if (curUnit != null)
+                    {
+                        if (curUnit.state == HexUnit.State.Cable)
+                        {
+                            possible = false;
+                            end = true;
+                        }
+                        else if (curUnit.state == HexUnit.State.Trail)
+                        {
+                            source = curUnit.source;
+                            possible = true;
+                        }
+                    }
+                }
+
+                if (possible)
+                {
+                    unit.ChangeStatus(HexUnit.State.Possible, source);
+                }
+            }
+        }
     }
 }

@@ -4,25 +4,38 @@ using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
-    private Char _charController;
-    private CameraController _cameraController;
+    private Character _charController;
+    private Camera camRef;
 
     private Transform _cam;
     private Vector3 _movement;
+
+    private float camSmooth = 5f;
+    private float camSizeMin = 20f;
+    private float camSizeMax = 250f;
 
     public System.Action Interact;
 
     void Start()
     {
-        _cam = Camera.main.transform;
+        camRef = Camera.main;
+        _cam = camRef.transform;
 
-        _charController = FindObjectOfType<Char>();
-        _cameraController = FindObjectOfType<CameraController>();
+        _charController = FindObjectOfType<Character>();
     }
 
     void Update()
     {
-        _cameraController.CameraRotation(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+
+        if (scroll < 0)
+        {
+            camRef.orthographicSize = Mathf.Clamp(camRef.orthographicSize + camSmooth, camSizeMin, camSizeMax);
+        }
+        else if (scroll > 0)
+        {
+            camRef.orthographicSize = Mathf.Clamp(camRef.orthographicSize - camSmooth, camSizeMin, camSizeMax);
+        }
     }
 
     void FixedUpdate()

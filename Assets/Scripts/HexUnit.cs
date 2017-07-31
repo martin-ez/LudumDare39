@@ -9,13 +9,14 @@ public class HexUnit : MonoBehaviour
     public GameObject[] prefabSource;
     public GameObject prefabCable;
 
+    public MeshRenderer statusBar;
+
+    public Material normalMat;
     public Material possibleMat;
     public Material withCableMat;
     public Material inUseMat;
 
     HexGrid grid;
-
-    GameObject statusBar;
 
     public enum Type
     {
@@ -35,7 +36,7 @@ public class HexUnit : MonoBehaviour
         InUse
     }
     public State state { get; private set; }
-    Vector2 source;
+    public Vector2 source;
 
     public Vector2 coords;
 
@@ -44,12 +45,6 @@ public class HexUnit : MonoBehaviour
         grid = FindObjectOfType<HexGrid>();
 
         state = State.Free;
-        statusBar = GameObject.CreatePrimitive(PrimitiveType.Quad);
-        statusBar.transform.SetParent(transform);
-        statusBar.transform.localEulerAngles = Vector3.right * 90;
-        statusBar.transform.localScale = Vector3.one * 50;
-        statusBar.transform.localPosition = Vector3.zero;
-        statusBar.SetActive(false);
     }
 
     void Start()
@@ -70,7 +65,7 @@ public class HexUnit : MonoBehaviour
     {
         Vector3 start = transform.position + Vector3.down * 50;
         Vector3 finish = transform.position;
-        float length = 0.25f;
+        float length = 0.5f;
         float timePassed = 0f;
         float percent = 0f;
         while (percent < 1)
@@ -130,23 +125,19 @@ public class HexUnit : MonoBehaviour
         switch (state)
         {
             case State.Free:
-                statusBar.SetActive(false);
+                statusBar.material = normalMat;
                 break;
             case State.Possible:
-                statusBar.SetActive(true);
-                statusBar.GetComponent<MeshRenderer>().material = possibleMat;
+                statusBar.material = possibleMat;
                 break;
             case State.Cable:
-                statusBar.SetActive(true);
-                statusBar.GetComponent<MeshRenderer>().material = withCableMat;
+                statusBar.material = withCableMat;
                 break;
             case State.Trail:
-                statusBar.SetActive(true);
-                statusBar.GetComponent<MeshRenderer>().material = withCableMat;
+                statusBar.material = withCableMat;
                 break;
             case State.InUse:
-                statusBar.SetActive(true);
-                statusBar.GetComponent<MeshRenderer>().material = inUseMat;
+                statusBar.material = inUseMat;
                 break;
         }
     }
@@ -163,6 +154,7 @@ public class HexUnit : MonoBehaviour
     {
         if (other.CompareTag("Char"))
         {
+            Debug.Log("Coord: " + coords.x + "," + coords.y + " - Status: " + state);
             FindObjectOfType<InputController>().Interact += OnInteract;
         }
     }
@@ -201,9 +193,5 @@ public class HexUnit : MonoBehaviour
         }
 
         grid.CreateUnit(coordsNew);
-        if (state == State.Trail)
-        {
-            grid.CheckPossibles(coords, source);
-        }
     }
 }

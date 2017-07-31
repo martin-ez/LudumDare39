@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Char : MonoBehaviour
+public class Character : MonoBehaviour
 {
     int resources = 1000;
     int cableCost = 10;
@@ -11,7 +11,6 @@ public class Char : MonoBehaviour
     private Rigidbody _rigidBody;
     private Vector3 _velocity;
 
-    [SerializeField]
     private float _speed = 7f;
 
     void Start()
@@ -28,6 +27,7 @@ public class Char : MonoBehaviour
         _velocity = (movement * _speed);
 
         _rigidBody.velocity = _velocity;
+        transform.LookAt(transform.position + movement);
     }
 
     public bool HaveResources()
