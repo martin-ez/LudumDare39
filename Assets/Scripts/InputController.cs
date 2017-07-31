@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
@@ -10,15 +8,18 @@ public class InputController : MonoBehaviour
     private Transform _cam;
     private Vector3 _movement;
 
-    private float camSmooth = 5f;
-    private float camSizeMin = 20f;
-    private float camSizeMax = 250f;
+    private float zoom = 80f;
+    private float zoomMin = 20f;
+    private float zoomMax = 250f;
+    private float zoomSpeed = 7.5f;
+    private float zoomSensitivity = 75f;
 
     public System.Action Interact;
 
     void Start()
     {
         camRef = Camera.main;
+        camRef.orthographicSize = zoom;
         _cam = camRef.transform;
 
         _charController = FindObjectOfType<Character>();
@@ -26,16 +27,8 @@ public class InputController : MonoBehaviour
 
     void Update()
     {
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-
-        if (scroll < 0)
-        {
-            camRef.orthographicSize = Mathf.Clamp(camRef.orthographicSize + camSmooth, camSizeMin, camSizeMax);
-        }
-        else if (scroll > 0)
-        {
-            camRef.orthographicSize = Mathf.Clamp(camRef.orthographicSize - camSmooth, camSizeMin, camSizeMax);
-        }
+        zoom -= Input.GetAxis("Mouse ScrollWheel") * zoomSensitivity;
+        zoom = Mathf.Clamp(zoom, zoomMin, zoomMax);
     }
 
     void FixedUpdate()
@@ -53,5 +46,10 @@ public class InputController : MonoBehaviour
         {
             Interact();
         }
+    }
+
+    void LateUpdate()
+    {
+        camRef.orthographicSize = Mathf.Lerp(camRef.orthographicSize, zoom, Time.deltaTime * zoomSpeed);
     }
 }

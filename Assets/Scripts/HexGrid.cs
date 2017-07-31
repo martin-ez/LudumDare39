@@ -8,7 +8,8 @@ public class HexGrid : MonoBehaviour
 
     public GameObject hexUnitPrefab;
     public float chanceSource = 0.1f;
-    public float chanceWall = 0.2f;
+    public float chanceWall = 0.4f;
+    public float oreChance = 0.5f;
     public System.Action Pulse;
 
     Dictionary<string, HexUnit> grid;
@@ -23,7 +24,7 @@ public class HexGrid : MonoBehaviour
     const float factor = 1.7320508076f;
     const float unitSize = 50f;
 
-    float pulseInterval = 0.75f;
+    float pulseInterval = 1.25f;
     float nextPulse;
 
     void Awake()
@@ -85,7 +86,8 @@ public class HexGrid : MonoBehaviour
 
         HexUnit hexUnit = unit.GetComponent<HexUnit>();
         hexUnit.coords = coords;
-        HexUnit.Type type = noSource ? HexUnit.Type.Empty : SelectType();
+        float chance = Random.value;
+        HexUnit.Type type = noSource ? (chance > 0.5f ?HexUnit.Type.Empty : HexUnit.Type.Ore) : SelectType();
         hexUnit.ChangeType(type);
         hexUnit.Rise();
         grid.Add(key, hexUnit);
@@ -282,12 +284,17 @@ public class HexGrid : MonoBehaviour
     {
         float chance = Random.value;
 
-        if (chance > chanceWall + chanceSource) return HexUnit.Type.Empty;
+        if (chance > chanceWall + chanceSource)
+        {
+            chance = Random.value;
+            if (chance > oreChance) return HexUnit.Type.Empty;
+            return HexUnit.Type.Ore;
+        }
 
         return (chance < chanceSource) ? HexUnit.Type.Source : HexUnit.Type.Wall;
     }
 
-    void CheckGridConnections()
+    public void CheckGridConnections()
     {
         foreach (KeyValuePair<string, HexUnit> pair in grid)
         {

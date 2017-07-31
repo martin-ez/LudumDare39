@@ -6,6 +6,8 @@ public class HexUnit : MonoBehaviour
 {
     public GameObject[] prefabEmpty;
     public GameObject[] prefabWall;
+    public GameObject[] prefabOre;
+    public GameObject prefabBrokenOre;
     public GameObject[] prefabSource;
     public GameObject prefabCable;
 
@@ -22,6 +24,7 @@ public class HexUnit : MonoBehaviour
     {
         Empty,
         Wall,
+        Ore,
         Source,
         Cable
     }
@@ -90,6 +93,9 @@ public class HexUnit : MonoBehaviour
             case Type.Wall:
                 objectsInUnit = prefabWall[Random.Range(0, prefabWall.Length)];
                 break;
+            case Type.Ore:
+                objectsInUnit = prefabOre[Random.Range(0, prefabWall.Length)];
+                break;
             case Type.Source:
                 objectsInUnit = prefabSource[Random.Range(0, prefabSource.Length)];
                 break;
@@ -148,13 +154,33 @@ public class HexUnit : MonoBehaviour
         {
             grid.PlaceCable(coords, source);
         }
+        else if (type == Type.Ore)
+        {
+            FindObjectOfType<Character>().Mine();
+            type = Type.Empty;
+            GameObject broken = Instantiate(prefabBrokenOre);
+            broken.transform.SetParent(transform);
+            broken.transform.localPosition = Vector3.zero;
+
+            bool done = false;
+            for (int i = 0; i < transform.childCount && !done; i++)
+            {
+                Transform child = transform.GetChild(i);
+                if (child.CompareTag("Ore"))
+                {
+                    Destroy(child.gameObject);
+                    done = true;
+                }
+            }
+
+            grid.CheckGridConnections();
+        }
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Char"))
-        {
-            Debug.Log("Coord: " + coords.x + "," + coords.y + " - Status: " + state);
+        {          
             FindObjectOfType<InputController>().Interact += OnInteract;
         }
     }

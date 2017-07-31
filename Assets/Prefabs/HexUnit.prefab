@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 33444883663559682}
   - component: {fileID: 23152620722034118}
   - component: {fileID: 64474900643564726}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: StatusBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -314,7 +314,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1334020575634442}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 229, y: 0, z: -9}
+  m_LocalPosition: {x: -161.70381, y: 404.38342, z: -469.6976}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4305395698722512}
@@ -539,9 +539,12 @@ MonoBehaviour:
   - {fileID: 1348585781988556, guid: f8b3d8a60d51b924a97768f8c1ae8e82, type: 2}
   prefabWall:
   - {fileID: 1443877919192134, guid: 4c8be40e65c7d1a4c8d3bf64a63de533, type: 2}
+  prefabOre:
+  - {fileID: 1887432317995010, guid: d82a2a04a26bc3d41bd3aa57b3f54166, type: 2}
+  prefabBrokenOre: {fileID: 1348585781988556, guid: f8b3d8a60d51b924a97768f8c1ae8e82,
+    type: 2}
   prefabSource:
   - {fileID: 1546676554179594, guid: d065940733dcd0048b22c4486cc1dbce, type: 2}
-  - {fileID: 1106713980020932, guid: 81f8326e30f44b441976b5712ab32752, type: 2}
   prefabCable: {fileID: 1536535452240380, guid: eaea1c52c332e6e469201b0d4cdbda15,
     type: 2}
   statusBar: {fileID: 23152620722034118}

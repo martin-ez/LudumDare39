@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Pulse : MonoBehaviour
 {
@@ -24,19 +22,14 @@ public class Pulse : MonoBehaviour
         grid = FindObjectOfType<HexGrid>();
     }
 
-    void Start()
-    {
-        grid.Pulse += OnPulse;
-    }
-
     public void Generate(Vector2 pSource, int pAmount)
     {
-        i_cable = 2;
+        i_cable = 1;
         amount = pAmount;
         source = pSource;
 
         fromCoord = source;
-        toCoord = grid.GetNextCable(source, 1);
+        toCoord = grid.GetNextCable(source, i_cable);
 
         from = HexGrid.ToHexCoords(fromCoord) + (Vector3.up * 10);
         to = HexGrid.ToHexCoords(toCoord) + (Vector3.up * 10);
@@ -50,12 +43,15 @@ public class Pulse : MonoBehaviour
         float percent = timePassed / travelTime;
 
         transform.position = Vector3.Lerp(from, to, percent);
+
+        if(percent >= 1)
+        {
+            NextTarget();
+        }
     }
 
-    void OnPulse()
+    void NextTarget()
     {
-        transform.position = to;
-
         if (toCoord == Vector2.zero)
         {
             FindObjectOfType<Base>().GetPower(amount);
@@ -63,12 +59,12 @@ public class Pulse : MonoBehaviour
         }
         else
         {
-            from = to;
-            Vector2 temp = toCoord;
-            toCoord = grid.GetNextCable(source, i_cable);
-            fromCoord = temp;
-            to = HexGrid.ToHexCoords(toCoord) + (Vector3.up * 10);
             i_cable++;
+            from = to;
+            fromCoord = toCoord;
+            toCoord = grid.GetNextCable(source, i_cable);
+            to = HexGrid.ToHexCoords(toCoord) + (Vector3.up * 10);
+            timePassed = 0;
             //Lost energy
             amount--;
         }

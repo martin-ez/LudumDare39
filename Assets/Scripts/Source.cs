@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class Source : MonoBehaviour
 {
@@ -15,11 +14,18 @@ public class Source : MonoBehaviour
 
     Vector2 coords;
 
+    [Header("UI")]
+    public Image healthBar;
+    public Text healthText;
+
     void Start()
     {
         powerLeft = startingPower;
         powerRate = startingPower / uses;
         coords = GetComponentInParent<HexUnit>().coords;
+
+        healthBar.fillAmount = 1;
+        healthText.text = powerLeft + " / " + startingPower;
     }
 
     public void StartExtract()
@@ -34,6 +40,8 @@ public class Source : MonoBehaviour
         newPulse.GetComponent<Pulse>().Generate(coords, powerRate);
 
         powerLeft -= powerRate;
+        healthBar.fillAmount = (float)powerLeft / (float)startingPower;
+        healthText.text = powerLeft + " / " + startingPower;
         if (powerLeft <= 0)
         {
             DestroySource();
