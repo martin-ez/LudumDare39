@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Char
   - Ore
+  - Fire
+  - Detail
   layers:
   - Default
   - TransparentFX

@@ -8,11 +8,15 @@ public class InputController : MonoBehaviour
     private Transform _cam;
     private Vector3 _movement;
 
-    private float zoom = 80f;
+    private float zoom = 30f;
     private float zoomMin = 20f;
-    private float zoomMax = 250f;
-    private float zoomSpeed = 7.5f;
-    private float zoomSensitivity = 75f;
+    private float zoomMax = 104f;
+    private float zoomSpeed = 6f;
+    private float zoomSensitivity = 40f;
+
+    private float interactCooldown = 0.5f;
+    private float nextInteract;
+
 
     public System.Action Interact;
 
@@ -20,9 +24,11 @@ public class InputController : MonoBehaviour
     {
         camRef = Camera.main;
         camRef.orthographicSize = zoom;
+        camRef.fieldOfView = zoom;
         _cam = camRef.transform;
 
         _charController = FindObjectOfType<Character>();
+        nextInteract = Time.time;
     }
 
     void Update()
@@ -42,8 +48,9 @@ public class InputController : MonoBehaviour
 
         _charController.Move(_movement);
 
-        if (_interact && Interact != null)
+        if (_interact && Interact != null && Time.time > nextInteract)
         {
+            nextInteract = Time.time + interactCooldown;
             Interact();
         }
     }
@@ -51,5 +58,6 @@ public class InputController : MonoBehaviour
     void LateUpdate()
     {
         camRef.orthographicSize = Mathf.Lerp(camRef.orthographicSize, zoom, Time.deltaTime * zoomSpeed);
+        camRef.fieldOfView = Mathf.Lerp(camRef.orthographicSize, zoom, Time.deltaTime * zoomSpeed);
     }
 }

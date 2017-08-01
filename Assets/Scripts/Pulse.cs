@@ -14,7 +14,7 @@ public class Pulse : MonoBehaviour
 
     int i_cable;
 
-    float travelTime = 0.75f;
+    float travelTime = 1.15f;
     float timePassed = 0f;
 
     void Awake()
@@ -31,10 +31,11 @@ public class Pulse : MonoBehaviour
         fromCoord = source;
         toCoord = grid.GetNextCable(source, i_cable);
 
-        from = HexGrid.ToHexCoords(fromCoord) + (Vector3.up * 10);
-        to = HexGrid.ToHexCoords(toCoord) + (Vector3.up * 10);
+        from = HexGrid.ToHexCoords(fromCoord);
+        to = HexGrid.ToHexCoords(toCoord);
 
         transform.position = from;
+        transform.LookAt(to);
     }
 
     void Update()
@@ -44,7 +45,7 @@ public class Pulse : MonoBehaviour
 
         transform.position = Vector3.Lerp(from, to, percent);
 
-        if(percent >= 1)
+        if (percent >= 1)
         {
             NextTarget();
         }
@@ -63,10 +64,15 @@ public class Pulse : MonoBehaviour
             from = to;
             fromCoord = toCoord;
             toCoord = grid.GetNextCable(source, i_cable);
-            to = HexGrid.ToHexCoords(toCoord) + (Vector3.up * 10);
+            to = HexGrid.ToHexCoords(toCoord);
+            transform.LookAt(to);
+
             timePassed = 0;
             //Lost energy
-            amount--;
+            if (amount > 0)
+            {
+                amount--;
+            }
         }
     }
 }

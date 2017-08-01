@@ -5,18 +5,27 @@ using UnityEngine;
 public class HexUnit : MonoBehaviour
 {
     public GameObject[] prefabEmpty;
-    public GameObject[] prefabWall;
-    public GameObject[] prefabOre;
+    public GameObject[] prefabEmptySimplified;
+    public GameObject prefabWall;
+    public GameObject prefabOre;
     public GameObject prefabBrokenOre;
-    public GameObject[] prefabSource;
+    public GameObject prefabSource;
     public GameObject prefabCable;
 
+    int model;
+    int rotation;
+    bool beachSetting;
+    public MeshRenderer hex;
     public MeshRenderer statusBar;
 
-    public Material normalMat;
+    public Material beach;
+
+    public Material normalMatGrass;
+    public Material normalMatBeach;
     public Material possibleMat;
     public Material withCableMat;
     public Material inUseMat;
+    public Material oreMat;
 
     HexGrid grid;
 
@@ -88,20 +97,34 @@ public class HexUnit : MonoBehaviour
         switch (type)
         {
             case Type.Empty:
-                objectsInUnit = prefabEmpty[Random.Range(0, prefabEmpty.Length)];
+                model = Random.Range(0, prefabEmpty.Length);
+                objectsInUnit = prefabEmpty[model];
+                if (model < 3)
+                {
+                    beachSetting = true;
+                }
                 break;
             case Type.Wall:
-                objectsInUnit = prefabWall[Random.Range(0, prefabWall.Length)];
+                objectsInUnit = prefabWall;
+                beachSetting = true;
                 break;
             case Type.Ore:
-                objectsInUnit = prefabOre[Random.Range(0, prefabWall.Length)];
+                objectsInUnit = prefabOre;
+                statusBar.material = oreMat;
                 break;
             case Type.Source:
-                objectsInUnit = prefabSource[Random.Range(0, prefabSource.Length)];
+                objectsInUnit = prefabSource;
                 break;
             case Type.Cable:
                 objectsInUnit = prefabCable;
                 break;
+        }
+
+        if (beachSetting)
+        {
+            hex.material = beach;
+            statusBar.material = normalMatBeach;
+            beachSetting = true;
         }
 
         if (objectsInUnit != null)
@@ -110,8 +133,12 @@ public class HexUnit : MonoBehaviour
             instance.transform.SetParent(transform);
             instance.transform.localPosition = Vector3.zero;
 
+            int rotation = grid.GetRandomRotation();
+            instance.transform.localEulerAngles = Vector3.up * rotation;
+
             if (type == Type.Source)
             {
+                instance.transform.localEulerAngles = Vector3.zero;
                 Source s = instance.GetComponent<Source>();
                 if (s != null) grid.AddSource(coords, s);
             }
@@ -131,9 +158,10 @@ public class HexUnit : MonoBehaviour
         switch (state)
         {
             case State.Free:
-                statusBar.material = normalMat;
+                statusBar.material = beachSetting ? normalMatBeach : normalMatGrass;
                 break;
             case State.Possible:
+                Simplify();
                 statusBar.material = possibleMat;
                 break;
             case State.Cable:
@@ -148,6 +176,24 @@ public class HexUnit : MonoBehaviour
         }
     }
 
+    void Simplify()
+    {
+        bool done = false;
+        for (int i = 0; i < transform.childCount && !done; i++)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.tag == ("Detail"))
+            {
+                Destroy(child.gameObject);
+                GameObject simple = Instantiate(prefabEmptySimplified[model]);
+                simple.transform.SetParent(transform);
+                simple.transform.localPosition = Vector3.zero;
+                simple.transform.localEulerAngles = Vector3.up * rotation;
+                done = true;
+            }
+        }
+    }
+
     void OnInteract()
     {
         if (state == State.Possible)
@@ -158,9 +204,11 @@ public class HexUnit : MonoBehaviour
         {
             FindObjectOfType<Character>().Mine();
             type = Type.Empty;
+            statusBar.material = normalMatGrass;
             GameObject broken = Instantiate(prefabBrokenOre);
             broken.transform.SetParent(transform);
             broken.transform.localPosition = Vector3.zero;
+            broken.transform.localEulerAngles = Vector3.up * grid.GetRandomRotation(); ;
 
             bool done = false;
             for (int i = 0; i < transform.childCount && !done; i++)
@@ -180,7 +228,7 @@ public class HexUnit : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Char"))
-        {          
+        {
             FindObjectOfType<InputController>().Interact += OnInteract;
         }
     }

@@ -33,7 +33,7 @@ public class MainMenu : MonoBehaviour
         character.position = Vector3.Lerp(from, to, percent);
         character.eulerAngles = Vector3.Lerp(rotFrom, rotTo, percent);
 
-        if(percent >= 1)
+        if (percent >= 1)
         {
             timePassed = 0;
             Vector3 temp = from;

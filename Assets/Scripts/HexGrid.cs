@@ -6,10 +6,13 @@ public class HexGrid : MonoBehaviour
 {
     Character character;
 
+    float chanceSource = 0.1f;
+    float chanceOre = 0.1f;
+    float chanceWall = 0.3f;
+
     public GameObject hexUnitPrefab;
-    public float chanceSource = 0.1f;
-    public float chanceWall = 0.4f;
-    public float oreChance = 0.5f;
+    public GameObject wirePrefab;
+
     public System.Action Pulse;
 
     Dictionary<string, HexUnit> grid;
@@ -19,12 +22,13 @@ public class HexGrid : MonoBehaviour
 
     Vector2[] evenBorder;
     Vector2[] oddBorder;
+    int[] borderRotation;
 
     bool active;
     const float factor = 1.7320508076f;
     const float unitSize = 50f;
 
-    float pulseInterval = 1.25f;
+    float pulseInterval = 2.308f;
     float nextPulse;
 
     void Awake()
@@ -38,21 +42,32 @@ public class HexGrid : MonoBehaviour
         evenBorder = new Vector2[6]
         {
             new Vector2(0, 1),
-            new Vector2(0, -1),
-            new Vector2(-1, 0),
             new Vector2(1, 0),
+            new Vector2(1, -1),
+            new Vector2(0, -1),
             new Vector2(-1, -1),
-            new Vector2(1, -1)
+            new Vector2(-1, 0)
         };
 
         oddBorder = new Vector2[6]
         {
             new Vector2(0, 1),
+            new Vector2(1, 1),
+            new Vector2(1, 0),
             new Vector2(0, -1),
             new Vector2(-1, 0),
-            new Vector2(1, 0),
-            new Vector2(-1, 1),
-            new Vector2(1, 1)
+            new Vector2(-1, 1)
+        };
+
+        borderRotation = new int[6]
+        {
+            0,
+            60,
+            120,
+            180,
+            240,
+            300
+
         };
     }
 
@@ -87,7 +102,20 @@ public class HexGrid : MonoBehaviour
         HexUnit hexUnit = unit.GetComponent<HexUnit>();
         hexUnit.coords = coords;
         float chance = Random.value;
-        HexUnit.Type type = noSource ? (chance > 0.5f ?HexUnit.Type.Empty : HexUnit.Type.Ore) : SelectType();
+        HexUnit.Type pType = HexUnit.Type.Empty;
+        if (noSource)
+        {
+            float rand = Random.value;
+            if (rand < chanceOre)
+            {
+                pType = HexUnit.Type.Ore;
+            }
+        }
+        else
+        {
+            pType = SelectType();
+        }
+        HexUnit.Type type = pType;
         hexUnit.ChangeType(type);
         hexUnit.Rise();
         grid.Add(key, hexUnit);
@@ -153,6 +181,7 @@ public class HexGrid : MonoBehaviour
             path.Add(newPoint);
 
             string previous = path[path.Count - 2];
+            StartCoroutine(WirePlacement(StringToVector(previous), StringToVector(newPoint)));
             GetUnit(StringToVector(previous)).ChangeStatus(HexUnit.State.Cable);
             incompletePaths.Remove(key);
             Vector2 joinPath;
@@ -163,6 +192,7 @@ public class HexGrid : MonoBehaviour
                 if (joinPath != Vector2.zero)
                 {
                     //It joins a different path
+                    StartCoroutine(WirePlacement(StringToVector(newPoint), joinPath));
                     string joinPoint = joinPath.x + ":" + joinPath.y;
                     path.Add(joinPoint);
                     Vector2 pathSource = GetUnit(joinPath).source;
@@ -183,6 +213,10 @@ public class HexGrid : MonoBehaviour
                             path.Add(p[i]);
                         }
                     }
+                }
+                else
+                {
+                    StartCoroutine(WirePlacement(StringToVector(newPoint), Vector2.zero));
                 }
                 CompletePath(path);
             }
@@ -241,6 +275,42 @@ public class HexGrid : MonoBehaviour
         }
     }
 
+    IEnumerator WirePlacement(Vector2 from, Vector2 to)
+    {
+        //Search rotation
+        int rot = 0;
+        bool done = false;
+        Vector2[] borders = from.x % 2 == 0 ? evenBorder : oddBorder;
+        for (int i = 0; i < 6 && !done; i++)
+        {
+            if (from + borders[i] == to)
+            {
+                done = true;
+                rot = borderRotation[i];
+            }
+        }
+
+        //Place wire
+        GameObject wire = Instantiate(wirePrefab);
+        wire.transform.position = HexGrid.ToHexCoords(from);
+        wire.transform.eulerAngles = Vector3.up * rot;
+
+        float percent = 0;
+        float timePassed = 0;
+        float duration = 1.15f;
+        while (percent < 1)
+        {
+            float current = Mathf.Lerp(0, 2, percent);
+            wire.transform.localScale = new Vector3(1, 1, current);
+
+            timePassed += Time.deltaTime;
+            percent = timePassed / duration;
+            yield return null;
+        }
+
+        wire.transform.localScale = Vector3.one + Vector3.forward;
+    }
+
     HexUnit GetUnit(Vector2 coords)
     {
         string key = coords.x + ":" + coords.y;
@@ -267,6 +337,12 @@ public class HexGrid : MonoBehaviour
         return Vector2.zero;
     }
 
+    public int GetRandomRotation()
+    {
+        return borderRotation[Random.Range(0, borderRotation.Length - 1)];
+    }
+
+
     public static Vector3 ToHexCoords(Vector2 coords)
     {
         if (coords.x % 2 == 0)
@@ -282,16 +358,28 @@ public class HexGrid : MonoBehaviour
 
     HexUnit.Type SelectType()
     {
+        float total = 0;
         float chance = Random.value;
 
-        if (chance > chanceWall + chanceSource)
+        total += chanceSource;
+        if (chance < total)
         {
-            chance = Random.value;
-            if (chance > oreChance) return HexUnit.Type.Empty;
+            return HexUnit.Type.Source;
+        }
+
+        total += chanceOre;
+        if (chance < total)
+        {
+            return HexUnit.Type.Wall;
+        }
+
+        total += chanceWall;
+        if (chance < total)
+        {
             return HexUnit.Type.Ore;
         }
 
-        return (chance < chanceSource) ? HexUnit.Type.Source : HexUnit.Type.Wall;
+        return HexUnit.Type.Empty;
     }
 
     public void CheckGridConnections()
