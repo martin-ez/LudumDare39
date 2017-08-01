@@ -39,10 +39,11 @@ public class InputController : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool _interact = Input.GetAxis("Exit") > 0;
-        bool _exit = Input.GetAxis("Interact") > 0;
+        bool _interact = Input.GetAxis("Interact") > 0;
+        bool _exit = Input.GetAxis("Cancel") > 0;
         float _h = Input.GetAxis("Horizontal");
         float _v = Input.GetAxis("Vertical");
+
         if (_exit)
         {
             Application.Quit();

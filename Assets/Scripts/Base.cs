@@ -11,7 +11,7 @@ public class Base : MonoBehaviour
     float deadlineMinutes = 5f;
     float timePassed = 0;
 
-    int maxPower = 500;
+    int maxPower = 1000;
     int power = 0;
 
     [Header("UI")]
@@ -79,12 +79,13 @@ public class Base : MonoBehaviour
             if (amount > 0)
             {
                 power += amount;
+                power = Mathf.Clamp(power, 0, maxPower);
             }
 
             healthBar.fillAmount = (float)power / (float)maxPower;
             healthText.text = power + " / " + maxPower;
 
-            if (power > maxPower)
+            if (power == maxPower)
             {
                 OnWin();
             }

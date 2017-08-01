@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -18,6 +20,8 @@ public class Character : MonoBehaviour
 
     private float _speed = 45f;
 
+    bool canCraft;
+
     [Header("UI")]
     public Text countCopper;
     public Text countPrisma;
@@ -33,6 +37,8 @@ public class Character : MonoBehaviour
     public Image addWire;
     public Text addCountWire;
     public Text[] texts;
+
+    public Image crafRecipe;
 
     public float fadeUI = 5f;
     public Color add;
@@ -57,6 +63,9 @@ public class Character : MonoBehaviour
         {
             texts[i].canvasRenderer.SetAlpha(0f);
         }
+
+        canCraft = false;
+        crafRecipe.gameObject.SetActive(false);
     }
 
     public void Move(Vector3 movement)
@@ -87,18 +96,20 @@ public class Character : MonoBehaviour
 
     public void Mine()
     {
-        int newCopper = Random.Range(1, 4);
+        int newCopper = Random.Range(2, 7);
         copper += newCopper;
+
         float chance = Random.value;
         int newPrismalite = 0;
-        if (chance < 0.6f)
+        if (chance < 0.75f)
         {
-            newPrismalite = 1;
+            newPrismalite = Random.Range(1, 3);
         }
         prismalite += newPrismalite;
+
         chance = Random.value;
         int newZetthyst = 0;
-        if (chance < 0.08f)
+        if (chance < 0.1f)
         {
             newZetthyst = 1;
         }
@@ -106,6 +117,11 @@ public class Character : MonoBehaviour
 
         UpdateCount();
         ShowAdds(newCopper, newPrismalite, newZetthyst, 0);
+        FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.Mine);
+        if (!canCraft)
+        {
+            CheckCanCraff();
+        }
     }
 
     public void ConvertToWire()
@@ -170,6 +186,9 @@ public class Character : MonoBehaviour
 
         UpdateCount();
         ShowAdds(newCopper, newPrismalite, newZetthyst, newWire);
+        canCraft = false;
+        crafRecipe.gameObject.SetActive(false);
+        FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.CraftWire);
     }
 
     void UpdateCount()
@@ -250,6 +269,14 @@ public class Character : MonoBehaviour
         for (int i = 0; i < texts.Length; i++)
         {
             texts[i].CrossFadeAlpha(0f, fadeUI, false);
+        }
+    }
+
+    void CheckCanCraff()
+    {
+        if (copper >= 4 && (prismalite > 0 || zetthyst > 0))
+        {
+            crafRecipe.gameObject.SetActive(true);
         }
     }
 }

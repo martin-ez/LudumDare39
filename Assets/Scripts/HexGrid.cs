@@ -6,7 +6,7 @@ public class HexGrid : MonoBehaviour
 {
     Character character;
 
-    float chanceSource = 0.1f;
+    float chanceSource = 0.18f;
     float chanceOre = 0.1f;
     float chanceWall = 0.3f;
 
@@ -122,6 +122,7 @@ public class HexGrid : MonoBehaviour
 
         if (type == HexUnit.Type.Source)
         {
+            FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.DiscoverSource);
             hexUnit.ChangeStatus(HexUnit.State.Trail, coords);
             StartPath(coords);
         }
@@ -167,7 +168,10 @@ public class HexGrid : MonoBehaviour
     {
         //Check if Char have resources
         if (!character.HaveResources())
+        {
+            FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.WireFail);
             return;
+        }
 
         HexUnit unit = GetUnit(cable);
         unit.ChangeType(HexUnit.Type.Cable);
@@ -219,10 +223,12 @@ public class HexGrid : MonoBehaviour
                     StartCoroutine(WirePlacement(StringToVector(newPoint), Vector2.zero));
                 }
                 CompletePath(path);
+                FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.CompletePath);
             }
             else
             {
                 incompletePaths.Add(key, path);
+                FindObjectOfType<AudioManager>().PlaySound(AudioManager.Sound.PlaceWire);
             }
 
             CheckGridConnections();
@@ -339,7 +345,7 @@ public class HexGrid : MonoBehaviour
 
     public int GetRandomRotation()
     {
-        return borderRotation[Random.Range(0, borderRotation.Length - 1)];
+        return borderRotation[Random.Range(0, borderRotation.Length)];
     }
 
 

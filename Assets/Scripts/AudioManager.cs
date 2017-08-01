@@ -20,7 +20,7 @@ public class AudioManager : MonoBehaviour
     public float musicElectricVolume { get; private set; }
     public float musicAcousticVolume { get; private set; }
 
-    AudioSource sfx2DSource;
+    AudioSource sfx;
     AudioSource musicAcoustic;
     AudioSource musicElectric;
 
@@ -28,14 +28,33 @@ public class AudioManager : MonoBehaviour
     Transform playerT;
 
     public bool menuMusic;
+
+    public enum Sound
+    {
+        Mine,
+        CraftWire,
+        PlaceWire,
+        DiscoverSource,
+        CompletePath,
+        WireFail
+    }
+
+    [Header("Clips")]
     public AudioClip menu;
     public AudioClip acoustic;
     public AudioClip electric;
 
+    public AudioClip mine;
+    public AudioClip craftWire;
+    public AudioClip placeWire;
+    public AudioClip discoverSource;
+    public AudioClip completePath;
+    public AudioClip wireFail;
+
     void Awake()
     {
         GameObject sfx2DS = new GameObject("SFX_Source");
-        sfx2DSource = sfx2DS.AddComponent<AudioSource>();
+        sfx = sfx2DS.AddComponent<AudioSource>();
         sfx2DS.transform.parent = transform;
 
         audioListener = FindObjectOfType<AudioListener>().transform;
@@ -44,7 +63,9 @@ public class AudioManager : MonoBehaviour
             playerT = FindObjectOfType<Character>().transform;
         }
 
-        masterVolume = sfxVolume = musicVolume = 1;
+        masterVolume = 1;
+        sfxVolume = 1;
+        musicVolume = 0.8f;
         musicElectricVolume = 0;
         musicAcousticVolume = 1;
 
@@ -107,10 +128,36 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlaySound(AudioClip clip, Vector3 pos)
+    public void PlaySound(Sound clipName)
     {
+        AudioClip clip = null;
+        switch (clipName)
+        {
+            case Sound.Mine:
+                clip = mine;
+                break;
+            case Sound.CraftWire:
+                clip = craftWire;
+                break;
+            case Sound.PlaceWire:
+                clip = placeWire;
+                break;
+            case Sound.DiscoverSource:
+                clip = discoverSource;
+                break;
+            case Sound.CompletePath:
+                clip = completePath;
+                break;
+            case Sound.WireFail:
+                clip = wireFail;
+                break;
+        }
         if (clip != null)
-            AudioSource.PlayClipAtPoint(clip, pos, sfxVolume * masterVolume);
+        {
+            sfx.clip = clip;
+            sfx.loop = false;
+            sfx.Play();
+        }
     }
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode sceneMode)

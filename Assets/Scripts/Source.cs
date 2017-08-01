@@ -6,7 +6,7 @@ public class Source : MonoBehaviour
     public GameObject pulsePrefab;
     public GameObject sourceDestroyedPrefab;
 
-    public int[] types;
+    int[] types;
 
     int startingPower;
     int uses;
@@ -23,19 +23,26 @@ public class Source : MonoBehaviour
 
     void Start()
     {
-        startingPower = types[Random.Range(0, types.Length - 1)];
-        uses = Random.Range(5, 15);
+        types = new int[3]
+        {
+            100,
+            200,
+            300
+        };
+
+        startingPower = types[Random.Range(0, types.Length)];
+        uses = Random.Range(5, 21);
         powerLeft = startingPower;
         powerRate = startingPower / uses;
         coords = GetComponentInParent<HexUnit>().coords;
 
         healthBar.fillAmount = 1;
         healthText.text = powerLeft + " / " + startingPower;
-        if (startingPower <= 100)
+        if (startingPower == 100)
         {
             name.text = "Small Power Crystal";
         }
-        else if (startingPower <= 300)
+        else if (startingPower == 200)
         {
             name.text = "Medium Power Crystal";
         }

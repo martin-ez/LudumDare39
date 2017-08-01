@@ -907,7 +907,7 @@ GameObject:
   m_PrefabParentObject: {fileID: 1733717335241662, guid: 30870c95afbdded4db9132f0efee6a36,
     type: 2}
   m_PrefabInternal: {fileID: 1564311832}
---- !u!114 &457328860
+--- !u!114 &457328855
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1345,8 +1345,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 366.67, y: 101.26}
+  m_AnchoredPosition: {x: -0.000017167, y: -7}
+  m_SizeDelta: {x: 677.27, y: 135.42}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &610536623
 MonoBehaviour:
@@ -1360,7 +1360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.534}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1369,18 +1369,18 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 739cc98fc0d283249be03b05ee64f765, type: 3}
-    m_FontSize: 72
-    m_FontStyle: 0
+    m_FontSize: 70
+    m_FontStyle: 2
     m_BestFit: 0
     m_MinSize: 5
-    m_MaxSize: 72
+    m_MaxSize: 96
     m_Alignment: 4
     m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
-    m_LineSpacing: 1
-  m_Text: 4 Copper + 1 Prismalite = 1 Wire
+    m_LineSpacing: 0.7
+  m_Text: "4 Copper + 1 Prismalite \n= 1 Wire"
 --- !u!222 &610536624
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2517,8 +2517,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 366.67, y: 101.26}
+  m_AnchoredPosition: {x: -0.000022888, y: 7}
+  m_SizeDelta: {x: 677.27, y: 141.25}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1162669297
 MonoBehaviour:
@@ -2532,7 +2532,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.522}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -2541,18 +2541,18 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: 739cc98fc0d283249be03b05ee64f765, type: 3}
-    m_FontSize: 72
-    m_FontStyle: 0
+    m_FontSize: 70
+    m_FontStyle: 2
     m_BestFit: 0
-    m_MinSize: 5
-    m_MaxSize: 72
-    m_Alignment: 4
+    m_MinSize: 0
+    m_MaxSize: 151
+    m_Alignment: 1
     m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
-    m_LineSpacing: 1
-  m_Text: 4 Copper + 1 Zethyst = 4 Wire
+    m_LineSpacing: 0.7
+  m_Text: "4 copper + 1 zetthyst \n= 4 wire\n"
 --- !u!222 &1162669298
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3268,8 +3268,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 106.72, y: 0}
-  m_SizeDelta: {x: 400, y: 80}
+  m_AnchoredPosition: {x: 31, y: 5.899994}
+  m_SizeDelta: {x: 248.1, y: 98.2}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1536971521
 MonoBehaviour:
@@ -3283,7 +3283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.528}
+  m_Color: {r: 0.41553807, g: 0.8161765, b: 0.09001945, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -3457,6 +3457,11 @@ Prefab:
       propertyPath: m_AllowMSAA
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114007389335748882, guid: 30870c95afbdded4db9132f0efee6a36,
+        type: 2}
+      propertyPath: crafRecipe
+      value: 
+      objectReference: {fileID: 1536971521}
     m_RemovedComponents:
     - {fileID: 81604991758198190, guid: 30870c95afbdded4db9132f0efee6a36, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 30870c95afbdded4db9132f0efee6a36, type: 2}
@@ -3979,6 +3984,12 @@ MonoBehaviour:
   menu: {fileID: 0}
   acoustic: {fileID: 8300000, guid: d400ed03654349b46ad669f5d70e3519, type: 3}
   electric: {fileID: 8300000, guid: b502f8667b9d065459927b47ce2c1d77, type: 3}
+  mine: {fileID: 8300000, guid: 740760122fdae8543809c85a3fe97c6e, type: 3}
+  craftWire: {fileID: 8300000, guid: 562201185e74b1c44a20f3f367a11140, type: 3}
+  placeWire: {fileID: 8300000, guid: d3dd0ee6dd6b908469eafdcf7762bdf0, type: 3}
+  discoverSource: {fileID: 8300000, guid: 9055ecaacdd35904483b0e993cf54cb0, type: 3}
+  completePath: {fileID: 8300000, guid: 0f9e61bdd39acad40925a650c96c878c, type: 3}
+  wireFail: {fileID: 8300000, guid: a3271a8f0d9ab5447bb118c4a5326149, type: 3}
 --- !u!4 &1813898257
 Transform:
   m_ObjectHideFlags: 0

@@ -12,9 +12,9 @@ public class OreAnimation : MonoBehaviour
 
     private void Start()
     {
-        radius = Random.Range(20f, 30f);
-        rotateSpeed = Random.Range(0.8f, 2.5f);
-        _centre = HexGrid.ToHexCoords(GetComponentInParent<HexUnit>().coords) + Vector3.up * Random.Range(5f, 45f);
+        radius = Random.Range(20f, 31f);
+        rotateSpeed = Random.Range(0.8f, 2.6f);
+        _centre = HexGrid.ToHexCoords(GetComponentInParent<HexUnit>().coords) + Vector3.up * Random.Range(5f, 46f);
     }
 
     private void Update()
