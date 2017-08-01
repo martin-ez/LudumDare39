@@ -39,9 +39,14 @@ public class InputController : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool _interact = Input.GetAxis("Interact") > 0;
+        bool _interact = Input.GetAxis("Exit") > 0;
+        bool _exit = Input.GetAxis("Interact") > 0;
         float _h = Input.GetAxis("Horizontal");
         float _v = Input.GetAxis("Vertical");
+        if (_exit)
+        {
+            Application.Quit();
+        }
 
         Vector3 _camForward = Vector3.Scale(_cam.forward, new Vector3(1, 0, 1)).normalized;
         _movement = _v * _camForward + _h * _cam.right;

@@ -7,10 +7,11 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(CapsuleCollider))]
 public class Base : MonoBehaviour
 {
+    bool active = true;
     float deadlineMinutes = 5f;
     float timePassed = 0;
 
-    int maxPower = 400;
+    int maxPower = 500;
     int power = 0;
 
     [Header("UI")]
@@ -43,53 +44,59 @@ public class Base : MonoBehaviour
 
     void Update()
     {
-        timePassed += Time.deltaTime;
-
-        string minText = "";
-        string secText = "";
-        int seconds = (int)((deadlineMinutes * 60f) - timePassed);
-        minText = "" + Mathf.RoundToInt(seconds / 60);
-        int sec = Mathf.RoundToInt(seconds % 60);
-        if (sec < 10)
+        if (active)
         {
-            secText = "0" + sec;
-        }
-        else
-        {
-            secText = "" + sec;
-        }
-        timeText.text = minText + ":" + secText;
+            timePassed += Time.deltaTime;
 
-        timeBar.fillAmount = ((float)seconds / (float)(deadlineMinutes * 60f));
+            string minText = "";
+            string secText = "";
+            int seconds = (int)((deadlineMinutes * 60f) - timePassed);
+            minText = "" + Mathf.RoundToInt(seconds / 60);
+            int sec = Mathf.RoundToInt(seconds % 60);
+            if (sec < 10)
+            {
+                secText = "0" + sec;
+            }
+            else
+            {
+                secText = "" + sec;
+            }
+            timeText.text = minText + ":" + secText;
 
-        if (timePassed >= deadlineMinutes * 60)
-        {
-            OnLose();
+            timeBar.fillAmount = ((float)seconds / (float)(deadlineMinutes * 60f));
+
+            if (timePassed >= deadlineMinutes * 60)
+            {
+                OnLose();
+            }
         }
     }
 
     public void GetPower(int amount)
     {
-        if (amount > 0)
+        if (active)
         {
-            power += amount;
-        }
+            if (amount > 0)
+            {
+                power += amount;
+            }
 
-        healthBar.fillAmount = (float)power / (float)maxPower;
-        healthText.text = power + " / " + maxPower;
+            healthBar.fillAmount = (float)power / (float)maxPower;
+            healthText.text = power + " / " + maxPower;
 
-        if (power > maxPower)
-        {
-            OnWin();
-        }
+            if (power > maxPower)
+            {
+                OnWin();
+            }
 
-        if (power > maxPower / 2f)
-        {
-            float max = (float)maxPower / 2f;
-            float current = (float)power - max;
-            float percent = current / max;
-            audio.SetVolume(1 - percent, AudioManager.AudioChannel.Acoustic);
-            audio.SetVolume(percent, AudioManager.AudioChannel.Electric);
+            if (power > maxPower / 2f)
+            {
+                float max = (float)maxPower / 2f;
+                float current = (float)power - max;
+                float percent = current / max;
+                audio.SetVolume(1 - percent, AudioManager.AudioChannel.Acoustic);
+                audio.SetVolume(percent, AudioManager.AudioChannel.Electric);
+            }
         }
     }
 
@@ -116,6 +123,7 @@ public class Base : MonoBehaviour
 
     void OnWin()
     {
+        active = false;
         win.gameObject.SetActive(true);
         lose.gameObject.SetActive(false);
         StartCoroutine(BringPanel());
@@ -123,6 +131,7 @@ public class Base : MonoBehaviour
 
     void OnLose()
     {
+        active = false;
         win.gameObject.SetActive(false);
         lose.gameObject.SetActive(true);
         StartCoroutine(BringPanel());

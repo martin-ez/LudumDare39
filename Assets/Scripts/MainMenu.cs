@@ -54,11 +54,6 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadScene(levelToLoad);
     }
 
-    public void Settings()
-    {
-
-    }
-
     public void Quit()
     {
         Application.Quit();

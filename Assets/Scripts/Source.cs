@@ -24,7 +24,7 @@ public class Source : MonoBehaviour
     void Start()
     {
         startingPower = types[Random.Range(0, types.Length - 1)];
-        uses = Random.Range(5, 12);
+        uses = Random.Range(5, 15);
         powerLeft = startingPower;
         powerRate = startingPower / uses;
         coords = GetComponentInParent<HexUnit>().coords;
